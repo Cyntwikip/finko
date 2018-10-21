@@ -98,7 +98,8 @@ def get_time(recipient_id, last_context, response):
         if (num >= 1) and (num <= 12):
             #add_context(ContextStack, recipient_id, CONST_TIME_CONFIRM)
             last_context.append(num)
-            if last_context[1] == CONST_EVERY_MONDAY_AM:
+            text = ""
+            if last_context[1] == CONST_MONDAY_AM_TIME:
                 text = 'Nice! Is {}AM every Monday correct? thanks!'.format(num)
             elif last_context[1] == CONST_FRIDAY_PM_TIME:
                 text = 'Nice! Is {}PM every Friday correct? thanks!'.format(num)
