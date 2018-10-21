@@ -81,6 +81,7 @@ def parse_response(ContextStack, recipient_id, response):
     '''     
     # Check if the response is an answer to a previous question
     if recipient_id in ContextStack:
+        print('Processing context')
         handle_user_context(ContextStack, recipient_id, response)
         return
 
