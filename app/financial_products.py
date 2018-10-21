@@ -5,6 +5,18 @@ ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjY
 VERIFY_TOKEN = 'treblelab'
 bot = Bot(ACCESS_TOKEN)
 
+### Context
+CONST_LEARN_MORE = 'Learn More'
+CONST_NEWS_LINKS = 'News Links'
+CONST_RECOMMENDED_INVESTMENTS = 'Recommended Investments'
+CONST_LEARN_MORE_STOCKS = 'Learn more about stocks'
+CONST_NEWS_LINKS_STOCKS = 'News Links about stocks'
+CONST_RECOMMENDED_STOCKS = 'See recommendations'
+CONST_YES = 'Yes'
+CONST_NO = 'No'
+
+###
+
 def get_questions():
     return {
         'Question_1': {
@@ -24,29 +36,49 @@ def quick_reply_template(text, choices):
         "quick_replies":choices
     }
 
+def generic_template(title, img, buttons):
+    return {
+        "title":"Welcome!",
+        "image_url":img,
+        # "subtitle":"We have the right hat for everyone.",
+        "buttons": buttons
+    }
+    pass
+
 def option_init(recipient_id):
 
-    bot.send_text_message(recipient_id, 'To be implemented')
-    return
-    
-    texts = ['''Hi {}! Thank you for taking this risk assessment test'''.format(get_name(recipient_id)),
-            '''Remember that risk profiles for investor changes''',
-            '''You can take the test again and again to change your risk profile''']
+    texts = ['''Glad to know that you are willing to learn about financial instruments!''',
+             '''So what do you want to learn?''']
     for text in texts:
         bot.send_text_message(recipient_id, text)
 
-    choices = []
-    for choice in ['Yes', 'No']:
-        choices.append(
+    carousel = []
+
+    # Carousel 1
+    buttons = []
+    for choice in [CONST_LEARN_MORE, CONST_NEWS_LINKS, CONST_RECOMMENDED_INVESTMENTS]:
+        buttons.append(
             {
-                "content_type":"text",
+                "type":"postback",
                 "title":choice,
-                "payload":"RiskAssessmentTest_"+choice
+                "payload":"FinancialProducts_"+choice
             }
         )
+    carousel.append(generic_template('Mutual Funds', './static/img/finko/balance-business-calculator-163032.jpg', buttons))
 
-    out = quick_reply_template('Would you like to take the test now?', choices)
-    bot.send_message(recipient_id, out)
+    # Carousel 2
+    buttons = []
+    for choice in [CONST_LEARN_MORE_STOCKS, CONST_NEWS_LINKS_STOCKS, CONST_RECOMMENDED_STOCKS]:
+        buttons.append(
+            {
+                "type":"postback",
+                "title":choice,
+                "payload":"FinancialProducts_"+choice
+            }
+        )
+    carousel.append(generic_template('Stocks', './static/img/finko/achievement-bank-bitcoin-730567.jpg', buttons))
+
+    bot.send_generic_message(recipient_id, carousel)
 
 def parse_quickreply(recipient_id, response):
     pass
