@@ -38,8 +38,8 @@ def quick_reply_template(text, choices):
 
 def generic_template(title, img, buttons):
     return {
-        "title":"Welcome!",
-        "image_url":img,
+        "title": title,
+        "image_url": img,
         # "subtitle":"We have the right hat for everyone.",
         "buttons": buttons
     }
