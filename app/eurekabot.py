@@ -81,7 +81,6 @@ def parse_response(ContextStack, recipient_id, response):
     '''     
     # Check if the response is an answer to a previous question
     if recipient_id in ContextStack:
-        print('Processing context')
         handle_user_context(ContextStack, recipient_id, response)
         return
 
@@ -116,10 +115,14 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
 
 def handle_user_context(ContextStack, recipient_id, response):
     last_context = ContextStack[recipient_id][-1]
+    
+    print('Processing context')
+    print(last_context)
+    
     # [Flow, Context]
     flow = last_context[0]
     if flow == 'LearnToSave':
-        handle_user_context(ContextStack, recipient_id, response)
+        learn_to_save.handle_user_context(ContextStack, recipient_id, response)
     elif flow == 'RiskAssessmentTest':
         pass
     elif flow == 'FinancialProducts':
