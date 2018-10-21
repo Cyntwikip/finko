@@ -64,7 +64,9 @@ def option_init(recipient_id):
                 "payload":"FinancialProducts_"+choice
             }
         )
-    carousel.append(generic_template('Mutual Funds', './static/img/finko/img1.jpg', buttons))
+    img_url = './static/img/finko/img2.jpg'
+    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/img1.jpg"
+    carousel.append(generic_template('Mutual Funds', img_url, buttons))
 
     # Carousel 2
     buttons = []
@@ -76,7 +78,8 @@ def option_init(recipient_id):
                 "payload":"FinancialProducts_"+choice
             }
         )
-    carousel.append(generic_template('Stocks', './static/img/finko/img2.jpg', buttons))
+    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/img2.jpg"
+    carousel.append(generic_template('Stocks', img_url, buttons))
 
     bot.send_generic_message(recipient_id, carousel)
 
