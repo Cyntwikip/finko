@@ -72,12 +72,16 @@ def parse_quickreply(ContextStack, recipient_id, response):
             text = 'every Monday, {} AM'.format(last_context[-1])
         elif last_context[1] == CONST_FRIDAY_PM_TIME:
             text = 'every Friday, {} PM'.format(last_context[-1])
+        ContextStack.pop(recipient_id) # empty context
         bot.send_text_message(recipient_id, 'Got it! I will remind you {}'.format(text))
 
     else:
         bot.send_text_message(recipient_id, 'Thanks!')
 
 def add_context(ContextStack, recipient_id, context):
+    if recipient_id not in ContextStack:
+        ContextStack[recipient_id] = []
+    print(ContextStack)
     ContextStack[recipient_id].append(['LearnToSave',context])
 
 def handle_user_context(ContextStack, recipient_id, response):
