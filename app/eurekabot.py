@@ -36,7 +36,7 @@ def send_message(recipient_id, response):
     bot.send_text_message(recipient_id, response)
     return
 
-def parse_postbacks(recipient_id, postback):
+def parse_postbacks(ContextStack, recipient_id, postback):
     '''
     Parses the postback event that was triggered.
     '''
@@ -71,59 +71,30 @@ def parse_postbacks(recipient_id, postback):
         risk_assessment_test.option_init(recipient_id)
     elif postback == 'MenuOption_3':
         financial_products.option_init(recipient_id)
-        
-
-    # elif postback == 'EUREKAFILLE_QUIZ':
-    #     choices = [
-    #         {
-    #             "type":"postback",
-    #             "title":"Yes, bring it on!",
-    #             "payload":"Quiz_Accept"
-    #         },
-    #         {
-    #             "type":"postback",
-    #             "title":"No, I’m good.",
-    #             "payload":"Quiz_Reject"
-    #         }
-    #     ]
-    #     bot.send_button_message(recipient_id, 'Want to check out today’s COFFEE TRIVIA QUIZ?', choices)
-
-    # elif postback == "Quiz_Accept":
-    #     quiz.start_game(recipient_id)
-    # elif postback == "Quiz_Reject":
-    #     bot.send_text_message(recipient_id, 'Thank you! See you next time.')
-    # # elif postback_splitted[0] == "QuizAnswer":
-    # #     quiz.answer_question(recipient_id, postback_splitted[1])
-    # elif postback == 'Request_Directions':
-    #     directions.directions_menu(recipient_id)
-    # elif postback == 'Request_Time':
-    #     departures.departure_menu(recipient_id)
     else:
         bot.send_text_message(recipient_id, 'Unhandled postback')
     return
     
-def parse_response(recipient_id, response):
+def parse_response(ContextStack, recipient_id, response):
     '''
     Parses the user's response.
     '''     
-    # text = 'Hello there!'
-    # print(text)
-    # send_message(recipient_id, text)
-    # return
+    # Check if the response is an answer to a previous question
+    if recipient_id in ContextStack:
+        handle_user_context(ContextStack, recipient_id, response)
+        return
 
     start = ['start', 'ok', 'good morning', 'good afternoon', 
     'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
     if response.lower() in start:
         print('Main Menu will be displayed! :)')
-        parse_postbacks(recipient_id, 'GREETINGS')
-    # elif response.lower() == 'quiz':
-    #     print('Quiz will be displayed! :)')
-    #     parse_postbacks(recipient_id, 'EUREKAFILLE_QUIZ')
+        parse_postbacks(ContextStack, recipient_id, 'GREETINGS')
+
     else:
         send_message(recipient_id, 'Sorry. I did not understand what you have just said.')
     return
 
-def parse_quickreply(recipient_id, payload, time_epoch):
+def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     '''
     Parses the user's quick reply response.
     '''        
@@ -131,56 +102,26 @@ def parse_quickreply(recipient_id, payload, time_epoch):
     response_splitted = payload.split('_')
 
     if response_splitted[0] == 'LearnToSave':
-        learn_to_save.parse_quickreply(recipient_id, response_splitted[1:])
+        learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
+        # learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
     elif response_splitted[0] == 'RiskAssessmentTest':
         risk_assessment_test.parse_quickreply(recipient_id, response_splitted[1:])
     elif response_splitted[0] == 'FinancialProducts':
         financial_products.parse_quickreply(recipient_id, response_splitted[1:])
-
-
-    # # postback for request departure: ingress
-    # if len(response_splitted)==2 and response_splitted[0]=='DepartureIngress':
-    #     ingress = response_splitted[1]
-    #     print(ingress)
-    #     if ingress.startswith('Next'):
-    #         slicing = ingress.replace('Next', '')
-    #         departures.parse_ingress(recipient_id, int(slicing))
-    #     elif ingress.startswith('Prev'):
-    #         slicing = ingress.replace('Prev', '')
-    #         departures.parse_ingress(recipient_id, int(slicing))
-    #     else:
-    #         departures.parse_egress(recipient_id, ingress, 0)
-    # # postback for request departure: egress
-    # elif len(response_splitted)==3 and response_splitted[0]=='DepartureEgress':
-    #     ingress = response_splitted[1]
-    #     egress = response_splitted[2]
-    #     print(ingress, egress)
-    #     if egress.startswith('Next'):
-    #         slicing = egress.replace('Next', '')
-    #         departures.parse_egress(recipient_id, ingress, int(slicing))
-    #     elif egress.startswith('Prev'):
-    #         slicing = egress.replace('Prev', '')
-    #         departures.parse_egress(recipient_id, ingress, int(slicing))
-    #     else:
-    #         departures.parse_final(recipient_id, ingress, egress, time_epoch)
-    # # postback for request directions
-    # elif len(response_splitted)==2 and response_splitted[0]=='DirectionIngress':
-    #     ingress = response_splitted[1]
-    #     print(ingress)
-    #     if ingress.startswith('Next'):
-    #         slicing = ingress.replace('Next', '')
-    #         directions.parse_ingress(recipient_id, int(slicing))
-    #     elif ingress.startswith('Prev'):
-    #         slicing = ingress.replace('Prev', '')
-    #         directions.parse_ingress(recipient_id, int(slicing))
-    #     else:
-    #         directions.parse_station(recipient_id, ingress)
-    # elif response_splitted[0] == "QuizAnswer":
-    #     quiz.answer_question(recipient_id, response_splitted[1])
     else:
         bot.send_text_message(recipient_id, 'Unhandled quick reply')
     return
 
-# def directions_get_location(recipient_id, coordinates):
-#     directions.get_location(recipient_id, coordinates)
-#     return
+
+def handle_user_context(ContextStack, recipient_id, response):
+    last_context = ContextStack[recipient_id][-1]
+    # [Flow, Context]
+    flow = last_context[0]
+    if flow == 'LearnToSave':
+        handle_user_context(ContextStack, recipient_id, response)
+    elif flow == 'RiskAssessmentTest':
+        pass
+    elif flow == 'FinancialProducts':
+        pass
+    return
+

@@ -2,6 +2,14 @@ from app import app
 from flask import Flask, request, jsonify, json, url_for, redirect, session, render_template
 from app import eurekabot 
 
+ContextStack = {}
+
+# def check_user_context(recipient_id):
+#     return recipient_id in ContextStack:
+
+# def handle_user_context(recipient_id, response):
+#     eurekabot.handle_user_context()
+        
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -56,7 +64,7 @@ def lrtbot():
                 #If there is, then process the postback
                 if message.get('postback') and message['postback'].get('payload'):
                     postback = message['postback']['payload']
-                    eurekabot.parse_postbacks(recipient_id, postback)
+                    eurekabot.parse_postbacks(ContextStack, recipient_id, postback)
 
                 elif message.get('message'):
                     # if user sends a quick reply
@@ -64,13 +72,16 @@ def lrtbot():
                     print(quick_reply)
                     if quick_reply and quick_reply.get('payload'):
                         payload = quick_reply.get('payload')
-                        eurekabot.parse_quickreply(recipient_id, payload, time_epoch)
+                        eurekabot.parse_quickreply(ContextStack, recipient_id, payload, time_epoch)
                         break
 
                     #Facebook Messenger ID for user so we know where to send response back to
                     response = message['message'].get('text')
                     if response:
-                        eurekabot.parse_response(recipient_id, response)
+                        # if recipient_id in ContextStack:
+                        #     eurekabot.handle_user_context(cs, recipient_id, response)
+                        #     break
+                        eurekabot.parse_response(ContextStack, recipient_id, response)
                         break
                         
                     #if user sends us a GIF, photo,video, or any other non-text item
