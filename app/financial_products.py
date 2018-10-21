@@ -64,7 +64,7 @@ def option_init(recipient_id):
                 "payload":"FinancialProducts_"+choice
             }
         )
-    carousel.append(generic_template('Mutual Funds', './static/img/finko/balance-business-calculator-163032.jpg', buttons))
+    carousel.append(generic_template('Mutual Funds', './static/img/finko/img1.jpg', buttons))
 
     # Carousel 2
     buttons = []
@@ -76,7 +76,7 @@ def option_init(recipient_id):
                 "payload":"FinancialProducts_"+choice
             }
         )
-    carousel.append(generic_template('Stocks', './static/img/finko/achievement-bank-bitcoin-730567.jpg', buttons))
+    carousel.append(generic_template('Stocks', './static/img/finko/img2.jpg', buttons))
 
     bot.send_generic_message(recipient_id, carousel)
 
