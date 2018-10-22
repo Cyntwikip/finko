@@ -137,6 +137,7 @@ def add_context(ContextStack, recipient_id, context):
 
 def handle_user_context(ContextStack, recipient_id, response):
     last_context = ContextStack[recipient_id][-1]
+    print(ContextStack)
     
     if last_context[1] == CONST_TARGET_WEALTH:
         if response.isdigit():
