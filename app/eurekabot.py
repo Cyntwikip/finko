@@ -109,6 +109,8 @@ def parse_postbacks(ContextStack, recipient_id, postback):
         risk_assessment_test.option_init(recipient_id)
     elif postback == CONST_MENU_OPTION_3:
         financial_products.option_init(recipient_id)
+    elif postback_splitted[0] == CONST_LEARN_MONEY:
+        financial_products.parse_postbacks(ContextStack, recipient_id, postback)
     else:
         bot.send_text_message(recipient_id, 'Unhandled postback')
     return
@@ -125,6 +127,7 @@ def parse_response(ContextStack, recipient_id, response):
     intro = ['intro']
     if response.lower() in intro:
         parse_postbacks(ContextStack, recipient_id, CONST_FIRST_TIME_USER)
+        return
 
     start = ['start', 'ok', 'good morning', 'good afternoon', 
     'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']

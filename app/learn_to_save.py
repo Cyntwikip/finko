@@ -6,6 +6,9 @@ bot = Bot(ACCESS_TOKEN)
 
 ### Constants
 CONST_SAVE_MONEY = 'SaveMoney'
+CONST_NEED_MONEY = 'NeedMoney'
+CONST_LEARN_MONEY = 'LearnMoney'
+
 CONST_MONDAY_AM_TIME = 'Monday AM Time'
 CONST_FRIDAY_PM_TIME = 'Friday PM Time'
 CONST_EVERY_MONDAY_AM = 'Every Monday AM'
@@ -46,6 +49,7 @@ def option_init(recipient_id):
 def parse_quickreply(ContextStack, recipient_id, response):
     if response[0] == CONST_NO:
         bot.send_text_message(recipient_id, 'Got it!')
+        
     elif response[0] == CONST_YES:
         text = 'Got it! When do you want me to remind you? Salamat'
         choices = []
@@ -59,22 +63,44 @@ def parse_quickreply(ContextStack, recipient_id, response):
             )
         out = quick_reply_template(text, choices)
         bot.send_message(recipient_id, out)
+
     # elif response[0] == 'Day':
     #     bot.send_text_message(recipient_id, 'You have selected '+response[1])
+
     elif response[0] == 'Day' and response[1] == CONST_EVERY_MONDAY_AM:
         add_context(ContextStack, recipient_id, CONST_MONDAY_AM_TIME)
         bot.send_text_message(recipient_id, 'What time in the morning?')
+
     elif response[0] == 'Day' and response[1] == CONST_EVERY_FRIDAY_PM:
         add_context(ContextStack, recipient_id, CONST_FRIDAY_PM_TIME)
         bot.send_text_message(recipient_id, 'What time in the afternoon/evening?')
-    elif response[0] == CONST_TIME_CONFIRM and response[1] == CONST_YES:
-        last_context = ContextStack[recipient_id][-1]
-        if last_context[1] == CONST_MONDAY_AM_TIME:
-            text = 'every Monday, {} AM'.format(last_context[-1])
-        elif last_context[1] == CONST_FRIDAY_PM_TIME:
-            text = 'every Friday, {} PM'.format(last_context[-1])
-        ContextStack.pop(recipient_id) # empty context
-        bot.send_text_message(recipient_id, 'Got it! I will remind you {}'.format(text))
+
+    elif response[0] == CONST_TIME_CONFIRM:
+        if response[1] == CONST_YES:
+            last_context = ContextStack[recipient_id][-1]
+            if last_context[1] == CONST_MONDAY_AM_TIME:
+                text = 'every Monday, {} AM'.format(last_context[-1])
+            elif last_context[1] == CONST_FRIDAY_PM_TIME:
+                text = 'every Friday, {} PM'.format(last_context[-1])
+            ContextStack.pop(recipient_id) # empty context
+            bot.send_text_message(recipient_id, 'Got it! I will remind you {}'.format(text))
+
+            text = 'Do you want to invest now?... Or do you want to learn more about investing? Salamat!'
+            choices = []
+            for title, payload in zip(['Invest Now', 'Learn More'], [CONST_NEED_MONEY, CONST_LEARN_MONEY]):
+                choices.append(
+                    {
+                        "content_type": "text",
+                        "title": title,
+                        "payload": payload
+                    }
+                )
+            out = quick_reply_template(text, choices)
+            bot.send_message(recipient_id, out)
+
+        elif response[1] == CONST_NO:
+            ContextStack.pop(recipient_id)
+            bot.send_text_message(recipient_id, 'Okay!')
 
     else:
         bot.send_text_message(recipient_id, 'Thanks!')
