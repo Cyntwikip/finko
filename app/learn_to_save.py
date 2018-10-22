@@ -4,7 +4,8 @@ ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjY
 VERIFY_TOKEN = 'treblelab'
 bot = Bot(ACCESS_TOKEN)
 
-### Context
+### Constants
+CONST_SAVE_MONEY = 'SaveMoney'
 CONST_MONDAY_AM_TIME = 'Monday AM Time'
 CONST_FRIDAY_PM_TIME = 'Friday PM Time'
 CONST_EVERY_MONDAY_AM = 'Every Monday AM'
@@ -34,7 +35,7 @@ def option_init(recipient_id):
             {
                 "content_type":"text",
                 "title":choice,
-                "payload":"LearnToSave_"+choice
+                "payload":CONST_SAVE_MONEY+"_"+choice
             }
         )
         
@@ -53,7 +54,7 @@ def parse_quickreply(ContextStack, recipient_id, response):
                 {
                     "content_type":"text",
                     "title":choice,
-                    "payload":"LearnToSave_Day_"+choice
+                    "payload":CONST_SAVE_MONEY+"_Day_"+choice
                 }
             )
         out = quick_reply_template(text, choices)
@@ -82,7 +83,7 @@ def add_context(ContextStack, recipient_id, context):
     if recipient_id not in ContextStack:
         ContextStack[recipient_id] = []
     print(ContextStack)
-    ContextStack[recipient_id].append(['LearnToSave',context])
+    ContextStack[recipient_id].append([CONST_SAVE_MONEY,context])
 
 def handle_user_context(ContextStack, recipient_id, response):
     last_context = ContextStack[recipient_id][-1]
@@ -96,7 +97,6 @@ def get_time(recipient_id, last_context, response):
     if response.isdigit():
         num = int(response)
         if (num >= 1) and (num <= 12):
-            #add_context(ContextStack, recipient_id, CONST_TIME_CONFIRM)
             last_context.append(num)
             text = ""
             if last_context[1] == CONST_MONDAY_AM_TIME:
@@ -110,7 +110,7 @@ def get_time(recipient_id, last_context, response):
                     {
                         "content_type":"text",
                         "title":choice,
-                        "payload":"LearnToSave_"+CONST_TIME_CONFIRM+"_"+choice
+                        "payload":CONST_SAVE_MONEY+"_"+CONST_TIME_CONFIRM+"_"+choice
                     }
                 )
             out = quick_reply_template(text, choices)

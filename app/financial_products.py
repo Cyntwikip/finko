@@ -5,7 +5,8 @@ ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjY
 VERIFY_TOKEN = 'treblelab'
 bot = Bot(ACCESS_TOKEN)
 
-### Context
+### Constants
+CONST_LEARN_MONEY = 'LearnMoney'
 CONST_LEARN_MORE = 'Learn More'
 CONST_NEWS_LINKS = 'News Links'
 CONST_RECOMMENDED_INVESTMENTS = 'Recommended Investments'
@@ -59,9 +60,9 @@ def option_init(recipient_id):
     for choice in [CONST_LEARN_MORE, CONST_NEWS_LINKS, CONST_RECOMMENDED_INVESTMENTS]:
         buttons.append(
             {
-                "type":"postback",
-                "title":choice,
-                "payload":"FinancialProducts_"+choice
+                "type": "postback",
+                "title": choice,
+                "payload": CONST_LEARN_MONEY+"_"+choice
             }
         )
     img_url = './static/img/finko/img2.jpg'
@@ -73,9 +74,9 @@ def option_init(recipient_id):
     for choice in [CONST_LEARN_MORE_STOCKS, CONST_NEWS_LINKS_STOCKS, CONST_RECOMMENDED_STOCKS]:
         buttons.append(
             {
-                "type":"postback",
-                "title":choice,
-                "payload":"FinancialProducts_"+choice
+                "type": "postback",
+                "title": choice,
+                "payload": CONST_LEARN_MONEY+"_"+choice
             }
         )
     img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/img2.jpg"

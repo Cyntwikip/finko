@@ -33,7 +33,7 @@ def privacy():
 def lrtbot():
     #print('LRT Bot')
     if request.method == 'GET':
-        print('LRT Bot GET method')
+        # print('LRT Bot GET method')
             
         # Parse the query params
         token = request.args.get('hub.verify_token')
@@ -41,7 +41,7 @@ def lrtbot():
         return eurekabot.verify_fb_token(token)
     
     elif request.method == 'POST':
-        print('LRT Bot POST method')
+        # print('LRT Bot POST method')
 
         #Check if there is a header
         if request.headers['Content-Type'] != 'application/json':

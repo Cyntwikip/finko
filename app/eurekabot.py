@@ -1,11 +1,32 @@
 from flask import Flask, request, jsonify, json, url_for, redirect, session, render_template
 from pymessenger.bot import Bot
 from app import departures, directions, quiz, learn_to_save, risk_assessment_test, financial_products
-import random
+import random, requests
 
 ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjYgydy9Npa3i0WTtLovZBEY8Avf3uJP6L0MnzZCnaQMGiuMHlsjJ3imzG2tfXG9cjbvyyJhVEHXC3eJvNsq6auxMyc8LEufEeDbuPj04kZAbFvlugghdbXg'
 VERIFY_TOKEN = 'treblelab'
 bot = Bot(ACCESS_TOKEN)
+
+### Constants
+CONST_FIRST_TIME_USER = 'FirstTimeUser'
+
+CONST_MENU = "MENU"
+CONST_MENU_OPTION_1 = "MenuOption_1"
+CONST_MENU_OPTION_2 = "MenuOption_2"
+CONST_MENU_OPTION_3 = "MenuOption_3"
+
+CONST_SAVE_MONEY = 'SaveMoney'
+CONST_NEED_MONEY = 'NeedMoney'
+CONST_LEARN_MONEY = 'LearnMoney'
+
+CONST_AGE = 'Age'
+CONST_OCCUPATION = 'Occupation'
+CONST_INCOME = 'MonthlyIncome'
+
+CONST_YES = 'Yes'
+CONST_NO = 'No'
+
+###
 
 def verify_fb_token(token_sent):
     '''
@@ -28,6 +49,11 @@ def get_default_message():
         ]
     return random.choice(msg)
 
+def get_name(recipient_id):
+    url = "https://graph.facebook.com/{}?fields=first_name&access_token={}".format(recipient_id, ACCESS_TOKEN)
+    r = requests.get(url)    
+    return json.loads(r.content)['first_name']
+
 #uses PyMessenger to send response to user
 def send_message(recipient_id, response):
     '''
@@ -43,33 +69,45 @@ def parse_postbacks(ContextStack, recipient_id, postback):
     
     postback_splitted = postback.split('_')
 
-    if postback == 'GREETINGS':
+    if postback == CONST_FIRST_TIME_USER:
+        name = get_name(recipient_id)
+        texts = ['''Hi {}! I’m Finko. Need Financial Advice? I can help'''.format(name),
+                 '''For me to help you better, I’m going to need to know a little more about you…''',
+                 '''Don’t be shy! Whatever we discuss stays between us ;)''',
+                 '''So {}, Let’s start with age. How old (or young) are you?'''.format(name)]
+        for text in texts:
+            bot.send_text_message(recipient_id, text)
+        
+        # add Age context
+        add_context(ContextStack, recipient_id, CONST_AGE)
+
+    elif postback == CONST_MENU:
         #parse_response(recipient_id, 'Get Started')
         choices = [
             {
-                "type":"postback",
-                "title":"Help Me Learn How to Save",
-                "payload":"MenuOption_1"
+                "type": "postback",
+                "title": "Save Money",
+                "payload": CONST_MENU_OPTION_1
             },
             {
-                "type":"postback",
-                "title":"Take My Risk Assessment Test",
-                "payload":"MenuOption_2"
+                "type": "postback",
+                "title": "Need Money",
+                "payload": CONST_MENU_OPTION_2
             },
             {
-                "type":"postback",
-                "title":"Learn about Financial Products",
-                "payload":"MenuOption_3"
+                "type": "postback",
+                "title": "Learn more about money",
+                "payload": CONST_MENU_OPTION_3
             }
         ]
-        bot.send_button_message(recipient_id, "Let's get started. What can i do for you?", choices)
+        bot.send_button_message(recipient_id, "Cheers. What can I help you with?", choices)
 
-    elif postback == 'MenuOption_1':
+    elif postback == CONST_MENU_OPTION_1:
         # print('In Option 1')
         learn_to_save.option_init(recipient_id)
-    elif postback == 'MenuOption_2':
+    elif postback == CONST_MENU_OPTION_2:
         risk_assessment_test.option_init(recipient_id)
-    elif postback == 'MenuOption_3':
+    elif postback == CONST_MENU_OPTION_3:
         financial_products.option_init(recipient_id)
     else:
         bot.send_text_message(recipient_id, 'Unhandled postback')
@@ -84,11 +122,15 @@ def parse_response(ContextStack, recipient_id, response):
         handle_user_context(ContextStack, recipient_id, response)
         return
 
+    intro = ['intro']
+    if response.lower() in intro:
+        parse_postbacks(ContextStack, recipient_id, CONST_FIRST_TIME_USER)
+
     start = ['start', 'ok', 'good morning', 'good afternoon', 
     'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
     if response.lower() in start:
-        print('Main Menu will be displayed! :)')
-        parse_postbacks(ContextStack, recipient_id, 'GREETINGS')
+        # print('Main Menu will be displayed! :)')
+        parse_postbacks(ContextStack, recipient_id, CONST_MENU)
 
     else:
         send_message(recipient_id, 'Sorry. I did not understand what you have just said.')
@@ -101,13 +143,17 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     print(payload)
     response_splitted = payload.split('_')
 
-    if response_splitted[0] == 'LearnToSave':
+    if response_splitted[0] == CONST_SAVE_MONEY:
         learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
-        # learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
-    elif response_splitted[0] == 'RiskAssessmentTest':
+    elif response_splitted[0] == CONST_NEED_MONEY:
         risk_assessment_test.parse_quickreply(recipient_id, response_splitted[1:])
-    elif response_splitted[0] == 'FinancialProducts':
+    elif response_splitted[0] == CONST_LEARN_MONEY:
         financial_products.parse_quickreply(recipient_id, response_splitted[1:])
+    elif response_splitted[0] == CONST_FIRST_TIME_USER:
+        if response_splitted[1] == CONST_INCOME:
+            # TODO: save responses to DB
+            ContextStack.pop(recipient_id) # empty context
+            parse_postbacks(ContextStack, recipient_id, CONST_MENU)
     else:
         bot.send_text_message(recipient_id, 'Unhandled quick reply')
     return
@@ -121,11 +167,48 @@ def handle_user_context(ContextStack, recipient_id, response):
     
     # [Flow, Context]
     flow = last_context[0]
-    if flow == 'LearnToSave':
+    if flow == CONST_SAVE_MONEY:
         learn_to_save.handle_user_context(ContextStack, recipient_id, response)
-    elif flow == 'RiskAssessmentTest':
+    elif flow == CONST_NEED_MONEY:
         pass
-    elif flow == 'FinancialProducts':
+    elif flow == CONST_LEARN_MONEY:
         pass
+    elif flow == CONST_FIRST_TIME_USER:
+        if last_context[1] == CONST_AGE:
+            if response.isdigit():
+                num = int(response)
+                if num >= 18:
+                    last_context.append(num)
+                    add_context(ContextStack, recipient_id, CONST_OCCUPATION)
+                    bot.send_text_message(recipient_id, 'What is your occupation?')
+                    return
+            bot.send_text_message(recipient_id, 'Try again! Make sure to type a number greater than 18')
+        elif last_context[1] == CONST_OCCUPATION:
+            last_context.append(response)
+            # add_context(ContextStack, recipient_id, CONST_INCOME)
+
+            choices = []
+            for choice in ['Under 50k Pesos', '50-99k Pesos', '100-149k Pesos', '150-200k Pesos', 'Above 200k Pesos']:
+                choices.append(
+                    {
+                        "content_type":"text",
+                        "title":choice,
+                        "payload":CONST_FIRST_TIME_USER+"_"+CONST_INCOME+"_"+choice
+                    }
+                )
+            out = quick_reply_template('To help you better, please disclose your monthly income:', choices)
+            bot.send_message(recipient_id, out)
+
     return
 
+def add_context(ContextStack, recipient_id, context):
+    if recipient_id not in ContextStack:
+        ContextStack[recipient_id] = []
+    print(ContextStack)
+    ContextStack[recipient_id].append([CONST_FIRST_TIME_USER,context])
+
+def quick_reply_template(text, choices):
+    return {
+        "text": text,
+        "quick_replies":choices
+    }
