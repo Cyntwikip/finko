@@ -111,6 +111,9 @@ def parse_postbacks(ContextStack, recipient_id, postback):
         need_money.option_init(recipient_id)
     elif postback == CONST_MENU_OPTION_3:
         financial_products.option_init(recipient_id)
+        
+    elif postback_splitted[0] == CONST_NEED_MONEY:
+        need_money.parse_postbacks(ContextStack, recipient_id, postback)
     elif postback_splitted[0] == CONST_LEARN_MONEY:
         financial_products.parse_postbacks(ContextStack, recipient_id, postback)
     else:
