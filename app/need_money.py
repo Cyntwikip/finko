@@ -170,30 +170,36 @@ def handle_user_context(ContextStack, recipient_id, response):
         bot.send_text_message(recipient_id, 'Try again! Make sure to type a positive number')
 
     elif last_context[1] == CONST_INITIAL_WEALTH:
-        target = ContextStack[recipient_id][0][2]
-        days = ContextStack[recipient_id][1][2]
-        initial = ContextStack[recipient_id][2][2]
+        if response.isdigit():
+            num = int(response)
+            if num>0:
+                target = ContextStack[recipient_id][0][2]
+                days = ContextStack[recipient_id][1][2]
+                initial = num
 
-        texts = ['''I just need to confirm.''',
-                 '''You need to spend {}'''.format(target),
-                 '''And you have {} days starting from today before the spend'''.format(days),
-                ]
-        for text in texts:
-            bot.send_text_message(recipient_id, text)
-            time.sleep(0.5)
+                texts = ['''I just need to confirm.''',
+                        '''You need to spend {}'''.format(target),
+                        '''And you have {} days starting from today before the spend'''.format(days),
+                        ]
+                for text in texts:
+                    bot.send_text_message(recipient_id, text)
+                    time.sleep(0.5)
 
-        text = '''And right now, you are willing to invest {} to reach this goal'''.format(initial)
-        choices = []
-        for choice in [CONST_YES, CONST_NO]:
-            choices.append(
-                {
-                    "content_type": "text",
-                    "title": choice,
-                    "payload": CONST_NEED_MONEY+"_"+CONST_INVEST_CONFIRM+"_"+choice
-                }
-            )
-        out = quick_reply_template(text, choices)
-        bot.send_message(recipient_id, out)
+                text = '''And right now, you are willing to invest {} to reach this goal'''.format(initial)
+                choices = []
+                for choice in [CONST_YES, CONST_NO]:
+                    choices.append(
+                        {
+                            "content_type": "text",
+                            "title": choice,
+                            "payload": CONST_NEED_MONEY+"_"+CONST_INVEST_CONFIRM+"_"+choice
+                        }
+                    )
+                out = quick_reply_template(text, choices)
+                bot.send_message(recipient_id, out)
+                return
+                
+        bot.send_text_message(recipient_id, 'Try again! Make sure to type a positive number')
 
     elif last_context[1] == CONST_GOAL_PROBABILITY:
         error_msg = 'Try again! Make sure to type a value ranging from 0 to 100'
