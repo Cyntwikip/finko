@@ -198,7 +198,7 @@ def handle_user_context(ContextStack, recipient_id, response):
                 out = quick_reply_template(text, choices)
                 bot.send_message(recipient_id, out)
                 return
-                
+
         bot.send_text_message(recipient_id, 'Try again! Make sure to type a positive number')
 
     elif last_context[1] == CONST_GOAL_PROBABILITY:
@@ -225,6 +225,7 @@ def handle_user_context(ContextStack, recipient_id, response):
             
             # TODO: save responses to DB
             ContextStack.pop(recipient_id)
+            return
 
         bot.send_text_message(recipient_id, error_msg)
 
