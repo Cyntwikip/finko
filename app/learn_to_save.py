@@ -36,9 +36,9 @@ def option_init(recipient_id):
     for choice in [CONST_YES, CONST_NO]:
         choices.append(
             {
-                "content_type":"text",
-                "title":choice,
-                "payload":CONST_SAVE_MONEY+"_"+choice
+                "content_type": "text",
+                "title": choice,
+                "payload": CONST_SAVE_MONEY+"_"+choice
             }
         )
         
@@ -49,16 +49,16 @@ def option_init(recipient_id):
 def parse_quickreply(ContextStack, recipient_id, response):
     if response[0] == CONST_NO:
         bot.send_text_message(recipient_id, 'Got it!')
-        
+
     elif response[0] == CONST_YES:
         text = 'Got it! When do you want me to remind you? Salamat'
         choices = []
         for choice in [CONST_EVERY_MONDAY_AM, CONST_EVERY_FRIDAY_PM]:
             choices.append(
                 {
-                    "content_type":"text",
-                    "title":choice,
-                    "payload":CONST_SAVE_MONEY+"_Day_"+choice
+                    "content_type": "text",
+                    "title": choice,
+                    "payload": CONST_SAVE_MONEY+"_Day_"+choice
                 }
             )
         out = quick_reply_template(text, choices)
@@ -134,9 +134,9 @@ def get_time(recipient_id, last_context, response):
             for choice in [CONST_YES, CONST_NO]:
                 choices.append(
                     {
-                        "content_type":"text",
-                        "title":choice,
-                        "payload":CONST_SAVE_MONEY+"_"+CONST_TIME_CONFIRM+"_"+choice
+                        "content_type": "text",
+                        "title": choice,
+                        "payload": CONST_SAVE_MONEY+"_"+CONST_TIME_CONFIRM+"_"+choice
                     }
                 )
             out = quick_reply_template(text, choices)

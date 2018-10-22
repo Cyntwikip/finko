@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, json, url_for, redirect, session, render_template
 from pymessenger.bot import Bot
-from app import departures, directions, quiz, learn_to_save, risk_assessment_test, financial_products
+from app import departures, directions, quiz, learn_to_save, risk_assessment_test, financial_products, need_money
 import random, requests
 
 ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjYgydy9Npa3i0WTtLovZBEY8Avf3uJP6L0MnzZCnaQMGiuMHlsjJ3imzG2tfXG9cjbvyyJhVEHXC3eJvNsq6auxMyc8LEufEeDbuPj04kZAbFvlugghdbXg'
@@ -22,6 +22,7 @@ CONST_LEARN_MONEY = 'LearnMoney'
 CONST_AGE = 'Age'
 CONST_OCCUPATION = 'Occupation'
 CONST_INCOME = 'MonthlyIncome'
+CONST_INVEST = 'Invest'
 
 CONST_YES = 'Yes'
 CONST_NO = 'No'
@@ -106,7 +107,8 @@ def parse_postbacks(ContextStack, recipient_id, postback):
         # print('In Option 1')
         learn_to_save.option_init(recipient_id)
     elif postback == CONST_MENU_OPTION_2:
-        risk_assessment_test.option_init(recipient_id)
+        # risk_assessment_test.option_init(recipient_id)
+        need_money.option_init(recipient_id)
     elif postback == CONST_MENU_OPTION_3:
         financial_products.option_init(recipient_id)
     elif postback_splitted[0] == CONST_LEARN_MONEY:
@@ -124,14 +126,18 @@ def parse_response(ContextStack, recipient_id, response):
         handle_user_context(ContextStack, recipient_id, response)
         return
 
+    start = ['start', 'ok', 'good morning', 'good afternoon', 
+    'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
     intro = ['intro']
+
     if response.lower() in intro:
         parse_postbacks(ContextStack, recipient_id, CONST_FIRST_TIME_USER)
         return
 
-    start = ['start', 'ok', 'good morning', 'good afternoon', 
-    'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
-    if response.lower() in start:
+    if response.lower() == 'invest':
+        parse_postbacks(ContextStack, recipient_id, CONST_NEED_MONEY+'_'+CONST_INVEST)
+    
+    elif response.lower() in start:
         # print('Main Menu will be displayed! :)')
         parse_postbacks(ContextStack, recipient_id, CONST_MENU)
 
@@ -149,7 +155,8 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     if response_splitted[0] == CONST_SAVE_MONEY:
         learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_NEED_MONEY:
-        risk_assessment_test.parse_quickreply(recipient_id, response_splitted[1:])
+        # risk_assessment_test.parse_quickreply(recipient_id, response_splitted[1:])
+        need_money.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_LEARN_MONEY:
         financial_products.parse_quickreply(recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_FIRST_TIME_USER:
@@ -173,7 +180,8 @@ def handle_user_context(ContextStack, recipient_id, response):
     if flow == CONST_SAVE_MONEY:
         learn_to_save.handle_user_context(ContextStack, recipient_id, response)
     elif flow == CONST_NEED_MONEY:
-        pass
+        need_money.handle_user_context(ContextStack, recipient_id, response)
+        # need_money.handle_user_context(ContextStack, recipient_id, response)
     elif flow == CONST_LEARN_MONEY:
         pass
     elif flow == CONST_FIRST_TIME_USER:
