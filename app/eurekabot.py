@@ -152,6 +152,11 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     print(payload)
     response_splitted = payload.split('_')
 
+    # handle rare cases that can cause error
+    if len(response_splitted) < 2:
+        print('No Context')
+        return
+
     if response_splitted[0] == CONST_SAVE_MONEY:
         learn_to_save.parse_quickreply(ContextStack, recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_NEED_MONEY:
@@ -175,6 +180,11 @@ def handle_user_context(ContextStack, recipient_id, response):
     print('Processing context')
     print(last_context)
     
+    # handle rare cases that can cause error
+    if len(last_context) < 2:
+        print('No Context')
+        return
+
     # [Flow, Context]
     flow = last_context[0]
     if flow == CONST_SAVE_MONEY:
