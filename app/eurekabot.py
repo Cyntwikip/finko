@@ -52,7 +52,7 @@ def get_default_message():
     return random.choice(msg)
 
 def get_name(recipient_id):
-    return 'Test'
+    # return 'Test'
     url = "https://graph.facebook.com/{}?fields=first_name&access_token={}".format(recipient_id, ACCESS_TOKEN)
     r = requests.get(url)    
     return json.loads(r.content)['first_name']
@@ -173,10 +173,10 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
         if response_splitted[1] == CONST_INCOME:
             print('ContextStack:',ContextStack)
             if recipient_id in ContextStack:
-                if len(ContextStack[recipient_id]) == 3:
+                if len(ContextStack[recipient_id]) == 2:
                     # TODO: save responses to DB
                     ## Add to DB
-                    income = ContextStack[recipient_id].pop()[2]
+                    income = response_splitted[2]
                     occupation = ContextStack[recipient_id].pop()[2]
                     age = ContextStack[recipient_id].pop()[2]
                     add_user(recipient_id, age, occupation, income)
@@ -235,7 +235,7 @@ def handle_user_context(ContextStack, recipient_id, response):
                 )
             out = quick_reply_template('To help you better, please disclose your monthly income:', choices)
             bot.send_message(recipient_id, out)
-            print('Final context stack before saving to db:', ContextStack)
+            #print('Final context stack before saving to db:', ContextStack)
 
     return
 
