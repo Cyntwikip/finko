@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+   <body>
+   
+      <table border = 1>
+         <thead>
+            <td>Id</td>
+            <td>Age</td>
+            <td>Occupation</td>
+            <td>Income</td>
+         </thead>
+         
+         {% for row in rows %}
+            <tr>
+               <td>{{row["id"]}}</td>
+               <td>{{row["age"]}}</td>
+               <td> {{ row["occupation"]}}</td>
+               <td>{{row['income']}}</td>	
+            </tr>
+         {% endfor %}
+      </table>
+      
+   </body>
+</html>

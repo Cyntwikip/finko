@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, json, url_for, redirect, session, ren
 from pymessenger.bot import Bot
 from app import departures, directions, quiz, learn_to_save, risk_assessment_test, financial_products, need_money
 import random, requests
+import sqlite3 as sql
 
 ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjYgydy9Npa3i0WTtLovZBEY8Avf3uJP6L0MnzZCnaQMGiuMHlsjJ3imzG2tfXG9cjbvyyJhVEHXC3eJvNsq6auxMyc8LEufEeDbuPj04kZAbFvlugghdbXg'
 VERIFY_TOKEN = 'treblelab'
@@ -131,9 +132,9 @@ def parse_response(ContextStack, recipient_id, response):
 
     start = ['start', 'ok', 'good morning', 'good afternoon', 
     'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
-    intro = ['intro']
-
-    if response.lower() in intro:
+    #intro = ['intro']
+    # if response.lower() in intro:  
+    if not user_exists(recipient_id):
         parse_postbacks(ContextStack, recipient_id, CONST_FIRST_TIME_USER)
         return
 
@@ -170,6 +171,13 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     elif response_splitted[0] == CONST_FIRST_TIME_USER:
         if response_splitted[1] == CONST_INCOME:
             # TODO: save responses to DB
+            ## Add to DB
+            income = ContextStack[recipient_id].pop()[2]
+            occupation = ContextStack[recipient_id].pop()[2]
+            age = ContextStack[recipient_id].pop()[2]
+            add_user(recipient_id, age, occupation, income)
+            ## End of DB
+
             ContextStack.pop(recipient_id) # empty context
             parse_postbacks(ContextStack, recipient_id, CONST_MENU)
     else:
@@ -236,3 +244,30 @@ def quick_reply_template(text, choices):
         "text": text,
         "quick_replies":choices
     }
+
+def add_user(id, age, occupation, income):
+    try:
+        with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute('''INSERT INTO users (id,age,occupation,income) 
+               VALUES (?,?,?,?)''',(id,age,occupation,income) )
+            
+            con.commit()
+            msg = "Record successfully added"
+    except:
+        con.rollback()
+        msg = "error in insert operation"
+      
+    finally:
+        return msg
+        con.close()
+
+def user_exists(id):
+    con = sql.connect("database.db")
+    con.row_factory = sql.Row
+
+    cur = con.cursor()
+    cur.execute('''SELECT * FROM users WHERE id={}'''.format(id))
+        
+    rows = cur.fetchall()
+    return rows==True

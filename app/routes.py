@@ -1,21 +1,15 @@
 from app import app
 from flask import Flask, request, jsonify, json, url_for, redirect, session, render_template
 from app import eurekabot 
+import sqlite3 as sql
 
 ContextStack = {}
-
-# def check_user_context(recipient_id):
-#     return recipient_id in ContextStack:
-
-# def handle_user_context(recipient_id, response):
-#     eurekabot.handle_user_context()
         
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         return render_template('index.html')
-        #return render_template('index.html', labels=labels, categories=cat_list)
         #return 'Get request'
 
     elif request.method == 'POST':
@@ -30,10 +24,10 @@ def privacy():
     return render_template('privacy.html')
 
 @app.route('/api/facebook_chatbot', methods=['GET','POST'])
-def lrtbot():
-    #print('LRT Bot')
+def finkobot():
+    #print('Finko Bot')
     if request.method == 'GET':
-        # print('LRT Bot GET method')
+        # print('Finko Bot GET method')
             
         # Parse the query params
         token = request.args.get('hub.verify_token')
@@ -41,7 +35,7 @@ def lrtbot():
         return eurekabot.verify_fb_token(token)
     
     elif request.method == 'POST':
-        # print('LRT Bot POST method')
+        # print('Finko Bot POST method')
 
         #Check if there is a header
         if request.headers['Content-Type'] != 'application/json':
@@ -78,9 +72,6 @@ def lrtbot():
                     #Facebook Messenger ID for user so we know where to send response back to
                     response = message['message'].get('text')
                     if response:
-                        # if recipient_id in ContextStack:
-                        #     eurekabot.handle_user_context(cs, recipient_id, response)
-                        #     break
                         eurekabot.parse_response(ContextStack, recipient_id, response)
                         break
                         
@@ -98,3 +89,74 @@ def lrtbot():
 
     return 'Request method type not supported'
 
+@app.route('/api/users')
+def show_users():
+    con = sql.connect("database.db")
+    con.row_factory = sql.Row
+   
+    cur = con.cursor()
+    cur.execute("select * from users")
+   
+    rows = cur.fetchall()
+    return render_template("users.html", rows = rows)
+
+@app.route('/api/users/add')
+def add_user():
+
+    try:
+        id = 444
+        age = 22
+        occupation = 'Student'
+        income = 'Over 9000'
+
+        with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute('''INSERT INTO users (id,age,occupation,income) 
+               VALUES (?,?,?,?)''',(id,age,occupation,income) )
+            
+            con.commit()
+            msg = "Record successfully added"
+    except:
+        con.rollback()
+        msg = "error in insert operation"
+      
+    finally:
+        #  return render_template("result.html",msg = msg)
+        return msg
+        con.close()
+    pass
+
+@app.route('/api/users/delete_all')
+def delete_users():
+    try:
+        with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute('''DELETE FROM users''')
+            
+            con.commit()
+            msg = "Users successfully deleted in database"
+    except:
+        con.rollback()
+        msg = "error in delete operation"
+      
+    finally:
+        return msg
+        con.close()
+    pass
+
+@app.route('/api/users/user')
+def check_user():
+    id = request.args.get('id')
+    #print(id)
+    if id:
+        con = sql.connect("database.db")
+        con.row_factory = sql.Row
+    
+        cur = con.cursor()
+        cur.execute('''SELECT * FROM users WHERE id={}'''.format(id))
+            
+        rows = cur.fetchall()
+        return 'User exists' if rows else 'User does not exist'
+
+    else:
+        return 'Use the following format: /api/users/user?id=<id>'
