@@ -52,7 +52,7 @@ def get_default_message():
     return random.choice(msg)
 
 def get_name(recipient_id):
-    return 'Test'
+    #return 'Test'
     url = "https://graph.facebook.com/{}?fields=first_name&access_token={}".format(recipient_id, ACCESS_TOKEN)
     r = requests.get(url)    
     return json.loads(r.content)['first_name']
@@ -173,10 +173,11 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
         if response_splitted[1] == CONST_INCOME:
             # TODO: save responses to DB
             ## Add to DB
+            print(ContextStack)
             income = ContextStack[recipient_id].pop()[2]
-            occupation = ContextStack[recipient_id].pop()[2]
-            age = ContextStack[recipient_id].pop()[2]
-            add_user(recipient_id, age, occupation, income)
+            # occupation = ContextStack[recipient_id].pop()[2]
+            # age = ContextStack[recipient_id].pop()[2]
+            # add_user(recipient_id, age, occupation, income)
             ## End of DB
 
             ContextStack.pop(recipient_id) # empty context
