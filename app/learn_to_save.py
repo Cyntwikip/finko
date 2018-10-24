@@ -9,6 +9,9 @@ CONST_SAVE_MONEY = 'SaveMoney'
 CONST_NEED_MONEY = 'NeedMoney'
 CONST_LEARN_MONEY = 'LearnMoney'
 
+CONST_MENU_OPTION_2 = "MenuOption_2"
+CONST_MENU_OPTION_3 = "MenuOption_3"
+
 CONST_MONDAY_AM_TIME = 'Monday AM Time'
 CONST_FRIDAY_PM_TIME = 'Friday PM Time'
 CONST_EVERY_MONDAY_AM = 'Every Monday AM'
@@ -87,7 +90,7 @@ def parse_quickreply(ContextStack, recipient_id, response):
 
             text = 'Do you want to invest now?... Or do you want to learn more about investing? Salamat!'
             choices = []
-            for title, payload in zip(['Invest Now', 'Learn More'], [CONST_NEED_MONEY, CONST_LEARN_MONEY]):
+            for title, payload in zip(['Invest Now', 'Learn More'], [CONST_MENU_OPTION_2, CONST_MENU_OPTION_3]):
                 choices.append(
                     {
                         "content_type": "text",
