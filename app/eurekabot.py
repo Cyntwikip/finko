@@ -52,6 +52,7 @@ def get_default_message():
     return random.choice(msg)
 
 def get_name(recipient_id):
+    return 'Test'
     url = "https://graph.facebook.com/{}?fields=first_name&access_token={}".format(recipient_id, ACCESS_TOKEN)
     r = requests.get(url)    
     return json.loads(r.content)['first_name']
