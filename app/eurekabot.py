@@ -171,17 +171,19 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
         financial_products.parse_quickreply(recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_FIRST_TIME_USER:
         if response_splitted[1] == CONST_INCOME:
-            print(ContextStack)
-            if recipient_id in ContextStack and len(ContextStack[recipient_id]) == 3:
-                # TODO: save responses to DB
-                ## Add to DB
-                income = ContextStack[recipient_id].pop()[2]
-                occupation = ContextStack[recipient_id].pop()[2]
-                age = ContextStack[recipient_id].pop()[2]
-                add_user(recipient_id, age, occupation, income)
-                ## End of DB
+            print('ContextStack:',ContextStack)
+            if recipient_id in ContextStack:
+                if len(ContextStack[recipient_id]) == 3
+                    # TODO: save responses to DB
+                    ## Add to DB
+                    income = ContextStack[recipient_id].pop()[2]
+                    occupation = ContextStack[recipient_id].pop()[2]
+                    age = ContextStack[recipient_id].pop()[2]
+                    add_user(recipient_id, age, occupation, income)
+                    print('Details added to database!!!')
+                    ## End of DB
 
-            ContextStack.pop(recipient_id) # empty context
+                ContextStack.pop(recipient_id) # empty context
             parse_postbacks(ContextStack, recipient_id, CONST_MENU)
     else:
         bot.send_text_message(recipient_id, 'Unhandled quick reply')
