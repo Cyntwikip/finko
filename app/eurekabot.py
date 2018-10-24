@@ -171,10 +171,10 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
         financial_products.parse_quickreply(recipient_id, response_splitted[1:])
     elif response_splitted[0] == CONST_FIRST_TIME_USER:
         if response_splitted[1] == CONST_INCOME:
-            if len(ContextStack[recipient_id]) == 3:
+            print(ContextStack)
+            if recipient_id in ContextStack and len(ContextStack[recipient_id]) == 3:
                 # TODO: save responses to DB
                 ## Add to DB
-                # print(ContextStack)
                 income = ContextStack[recipient_id].pop()[2]
                 occupation = ContextStack[recipient_id].pop()[2]
                 age = ContextStack[recipient_id].pop()[2]
