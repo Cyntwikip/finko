@@ -173,7 +173,7 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
         if response_splitted[1] == CONST_INCOME:
             print('ContextStack:',ContextStack)
             if recipient_id in ContextStack:
-                if len(ContextStack[recipient_id]) == 3
+                if len(ContextStack[recipient_id]) == 3:
                     # TODO: save responses to DB
                     ## Add to DB
                     income = ContextStack[recipient_id].pop()[2]
