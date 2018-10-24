@@ -235,6 +235,7 @@ def handle_user_context(ContextStack, recipient_id, response):
                 )
             out = quick_reply_template('To help you better, please disclose your monthly income:', choices)
             bot.send_message(recipient_id, out)
+            print('Final context stack before saving to db:', ContextStack)
 
     return
 
