@@ -135,7 +135,7 @@ def parse_response(ContextStack, recipient_id, response):
     'good evening', 'game', 'g', 'yes', 'hi', 'hello', 'hey']
     #intro = ['intro']
     # if response.lower() in intro:  
-    if not user_exists(recipient_id):
+    if not user_exists(recipient_id) or response=='update':
         parse_postbacks(ContextStack, recipient_id, CONST_FIRST_TIME_USER)
         return
 
@@ -179,7 +179,10 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
                     income = response_splitted[2]
                     occupation = ContextStack[recipient_id].pop()[2]
                     age = ContextStack[recipient_id].pop()[2]
-                    add_user(recipient_id, age, occupation, income)
+                    if user_exists(recipient_id):
+                        update_user(recipient_id, age, occupation, income)
+                    else:
+                        add_user(recipient_id, age, occupation, income)
                     print('Details added to database!!!')
                     ## End of DB
 
@@ -268,6 +271,24 @@ def add_user(id, age, occupation, income):
         return msg
         con.close()
 
+def update_user(id, age, occupation, income):
+    try:
+        with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute('''UPDATE users 
+                            SET age = ?, occupation = ?, income = ? 
+                            WHERE id = ?''',(age,occupation,income,id) )
+            
+            con.commit()
+            msg = "Record successfully modified"
+    except:
+        con.rollback()
+        msg = "error in update operation"
+      
+    finally:
+        return msg
+        con.close()
+
 def user_exists(id):
     con = sql.connect("database.db")
     con.row_factory = sql.Row
@@ -276,4 +297,9 @@ def user_exists(id):
     cur.execute('''SELECT * FROM users WHERE id={}'''.format(id))
         
     rows = cur.fetchall()
-    return rows==True
+    # print('CHECK IF USER EXISTS')
+    # print(len(rows))
+    # for row in rows:
+    #     print(row['id'])
+    # return rows==True
+    return True if rows else False

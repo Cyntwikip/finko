@@ -66,7 +66,7 @@ def option_init(recipient_id):
             }
         )
     img_url = './static/img/finko/img2.jpg'
-    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/img1.jpg"
+    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/thumb_mutualfund.jpg"
     carousel.append(generic_template('Mutual Funds', img_url, buttons))
 
     # Carousel 2
@@ -79,7 +79,7 @@ def option_init(recipient_id):
                 "payload": CONST_LEARN_MONEY+"_"+choice
             }
         )
-    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/img2.jpg"
+    img_url = "https://treblelab-finko.herokuapp.com/static/img/finko/thumb_stocks.jpg"
     carousel.append(generic_template('Stocks', img_url, buttons))
 
     bot.send_generic_message(recipient_id, carousel)
