@@ -157,6 +157,13 @@ def parse_quickreply(ContextStack, recipient_id, payload, time_epoch):
     print(payload)
     response_splitted = payload.split('_')
 
+    if payload == CONST_MENU_OPTION_2:
+        need_money.option_init(recipient_id)
+        return
+    if payload == CONST_MENU_OPTION_3:
+        financial_products.option_init(recipient_id)
+        return
+
     # handle rare cases that can cause error
     if len(response_splitted) < 2:
         print('No Context')
