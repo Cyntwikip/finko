@@ -1,7 +1,7 @@
 from pymessenger.bot import Bot
 import requests, json, random, time
 
-ACCESS_TOKEN = 'EAAgxZBvF1d4cBANc3Lr1wf7nfUlnyBRAU0uASBSEzkoD2tnEyYv6mPkqHLq5MjYgydy9Npa3i0WTtLovZBEY8Avf3uJP6L0MnzZCnaQMGiuMHlsjJ3imzG2tfXG9cjbvyyJhVEHXC3eJvNsq6auxMyc8LEufEeDbuPj04kZAbFvlugghdbXg'
+ACCESS_TOKEN = 'EAAaJ7bi0JewBAIbQqgm3GnIrcGB8MJdFY6LGmwjZC4k2QIdQXUMkr6PAlsEBqElNFb9SGauDHukQ890j7rxZBRJDnlyJdZBgOKCcrLkRRK9Tu6zcKq1oqMVMZCsjXvc69FTTuVmgejZC3uhFfL3jnfZCZBkhyCWS2DFj5RL6tAHA4HZBBeQf2sVu'
 VERIFY_TOKEN = 'treblelab'
 bot = Bot(ACCESS_TOKEN)
 
